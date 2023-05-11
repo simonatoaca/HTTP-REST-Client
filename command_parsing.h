@@ -3,21 +3,33 @@
 #include <string>
 #include <functional>
 #include <variant>
+#include <nlohmann/json.hpp>
 
-typedef struct {
-	std::string username;
-	std::string password;
-} auth_info_t;
+using json = nlohmann::json;
 
-typedef struct {
-    std::string title;
-    std::string author;
-    std::string genre;
-    std::string publisher;
-    int page_count;
-} book_t;
+namespace auth {
+    typedef struct {
+        std::string username;
+        std::string password;
+    } info_t;
 
-auth_info_t get_auth_info();
+    void to_json(json& j, const info_t& info);
+	void from_json(const json& j, info_t& info);
+}
 
-/* Returns true if exit was encountered */
-std::function<bool(int)> parse_command(std::string& command);
+namespace book {
+    typedef struct {
+        std::string title;
+        std::string author;
+        std::string genre;
+        std::string publisher;
+        int page_count;
+    } info_t;
+
+    void to_json(json& j, const info_t& info);
+	void from_json(const json& j, info_t& info);
+}
+
+
+/* Returns the function called by command */
+std::function<void(int)> parse_command(std::string& command);

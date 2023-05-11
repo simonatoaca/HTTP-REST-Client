@@ -13,29 +13,9 @@
 #include <time.h>
 
 #include "command_parsing.h"
-
-using json = nlohmann::json;
+#include "requests.h"
 
 static int sockfd;
-
-namespace ns {
-	// a simple struct to model a person
-	struct person {
-		std::string name;
-		std::string address;
-		int age;
-	};
-
-	void to_json(json& j, const person& p) {
-		j = json{ {"name", p.name}, {"address", p.address}, {"age", p.age} };
-	}
-
-	void from_json(const json& j, person& p) {
-		j.at("name").get_to(p.name);
-		j.at("address").get_to(p.address);
-		j.at("age").get_to(p.age);
-	}
-}
 
 int init_connection() {
 	struct sockaddr_in serv_addr;
@@ -64,14 +44,12 @@ int main() {
 	// json j = p;
 
 	// std::cout << j << std::endl;
-	sockfd = init_connection();
-
 	std::string command;
 	while (1) {
 		std::getline(std::cin, command);
 
-		clock_t clk = clock();
+		sockfd = init_connection();
 		parse_command(command)(sockfd);
-		std::cout << clock() - clk << std::endl;
+		close(sockfd);
 	}
 }

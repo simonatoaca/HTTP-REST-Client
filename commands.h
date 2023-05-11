@@ -2,12 +2,13 @@
 
 #include "command_parsing.h"
 
-bool register_user(auth_info_t info, int sockfd);
-bool login_user(auth_info_t info, int sockfd);
-bool enter_library(int sockfd);
-bool get_books(int sockfd);
-bool get_book(int id, int sockfd);
-bool add_book(book_t book, int sockfd);
-bool delete_book(int id, int sockfd);
-bool logout(int sockfd);
-bool exit_client(int sockfd);
+void register_user(auth::info_t info, int sockfd);
+void login_user(auth::info_t info, int sockfd);
+void enter_library(int sockfd);
+void get_books(int sockfd);
+void get_book(int id, int sockfd);
+void add_book(book::info_t book, int sockfd);
+void delete_book(int id, int sockfd);
+void logout(int sockfd);
+void invalid_command();
+void exit_client(int sockfd);

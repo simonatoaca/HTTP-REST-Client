@@ -1,4 +1,4 @@
-FILES=client.cpp command_parsing.cpp commands.cpp
+FILES=client.cpp command_parsing.cpp commands.cpp requests.cpp
 FLAGS=-std=c++17 -Wall -Werror
 
 build: client
@@ -8,3 +8,6 @@ client: $(FILES)
 
 clean:
 	rm client
+
+zip:
+	zip Toaca_Alexandra_322CA_Tema3PC.zip *.cpp *.h Makefile README.md

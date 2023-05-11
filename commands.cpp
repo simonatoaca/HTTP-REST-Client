@@ -9,46 +9,44 @@
 #include <arpa/inet.h>
 
 #include "commands.h"
+#include "requests.h"
 
-bool register_user(auth_info_t info, int sockfd) {
-	std::cout << info.username << " " << info.password << " " << sockfd << std::endl;
-    return true;
+void register_user(auth::info_t info, int sockfd) {
+	std::cout << info.username << " " << info.password << " " << sockfd << "\n";
+
 }
 
-bool login_user(auth_info_t info, int sockfd) {
-	std::cout << info.username << " " << info.password << " " << sockfd << std::endl;
-    return true;
+void login_user(auth::info_t info, int sockfd) {
+	std::cout << info.username << " " << info.password << " " << sockfd << "\n";
 }
 
-bool enter_library(int sockfd) {
-    std::cout << "Trying to enter the library" << std::endl;
-    return true;
+void enter_library(int sockfd) {
+	std::cout << "Trying to enter the library" << "\n";
 }
 
-bool get_books(int sockfd) {
-    return true;
+void get_books(int sockfd) {
 }
 
-bool get_book(int id, int sockfd) {
-    return true;
+void get_book(int id, int sockfd) {
+	std::cout << "Getting book " << id << "\n";
 }
 
-bool add_book(book_t book, int sockfd) {
-    std::cout << "Adding book " <<  book.title << " published by " << book.author << std::endl;
-
-    return true;
+void add_book(book::info_t book, int sockfd) {
+	std::cout << "Adding book " <<  book.title << " published by " << book.author << "\n";
 }
 
-bool delete_book(int id, int sockfd) {
-    return true;
+void delete_book(int id, int sockfd) {
 }
 
-bool logout(int sockfd) {
-    std::cout << "Logging out" << std::endl;
-    return true;
+void logout(int sockfd) {
+	std::cout << "Logging out" << "\n";
 }
 
-bool exit_client(int sockfd) {
+void invalid_command() {
+	std::cout << "Invalid command" << "\n";
+}
+
+void exit_client(int sockfd) {
 	close(sockfd);
-    return false;
+	exit(0);
 }
