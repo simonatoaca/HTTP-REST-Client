@@ -1,4 +1,4 @@
-FILES=client.cpp command_parsing.cpp commands.cpp requests.cpp
+FILES=client.cpp command_parsing.cpp commands.cpp requests.cpp http_parser.cpp
 FLAGS=-std=c++17 -Wall -Werror
 
 build: client

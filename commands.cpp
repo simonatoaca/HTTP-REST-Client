@@ -10,6 +10,7 @@
 
 #include "commands.h"
 #include "requests.h"
+#include "http_parser.h"
 
 #include <nlohmann/json.hpp>
 
@@ -46,8 +47,10 @@ void login_user(auth::info_t info, int sockfd) {
 	/* Handle errors, if they occur */
 
 	/* Get cookie */
+	std::string cookie = get_cookie(response);
+	std::cout << cookie << "\n";
 
-    puts(response);
+    //puts(response);
 	std::cout << "\n";
 }
 
