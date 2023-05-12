@@ -38,12 +38,6 @@ int init_connection() {
 }
 
 int main() {
-	// ns::person p = {"Ned Flanders", "744 Evergreen Terrace", 60};
-
-	// // conversion: person -> json
-	// json j = p;
-
-	// std::cout << j << std::endl;
 	std::string command;
 	while (1) {
 		std::getline(std::cin, command);

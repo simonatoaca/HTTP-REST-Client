@@ -100,30 +100,6 @@ void compute_message(char *message, const char *line)
 	strcat(message, "\r\n");
 }
 
-int open_connection(char *host_ip, int portno, int ip_type, int socket_type, int flag)
-{
-	struct sockaddr_in serv_addr;
-	int sockfd = socket(ip_type, socket_type, flag);
-	if (sockfd < 0)
-		error("ERROR opening socket");
-
-	memset(&serv_addr, 0, sizeof(serv_addr));
-	serv_addr.sin_family = ip_type;
-	serv_addr.sin_port = htons(portno);
-	inet_aton(host_ip, &serv_addr.sin_addr);
-
-	/* connect the socket */
-	if (connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0)
-		error("ERROR connecting");
-
-	return sockfd;
-}
-
-void close_connection(int sockfd)
-{
-	close(sockfd);
-}
-
 char *compute_get_request(const char *host, const char *url, std::vector<std::string> &cookies,
 						 std::string authorization_token)
 {
@@ -211,6 +187,44 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	strcat(message, body_data_buffer);
 
 	free(line);
+	return message;
+}
+
+char *compute_delete_request(const char *host, const char *url, std::vector<std::string> &cookies,
+						 std::string authorization_token)
+{
+	char *message = (char *)calloc(BUFLEN, sizeof(char));
+	char *line = (char *)calloc(LINELEN, sizeof(char));
+
+	// Write the method name, URL and protocol type
+	sprintf(line, "DELETE %s HTTP/1.1", url);
+
+	compute_message(message, line);
+
+	// Add the host
+	sprintf(line, "Host: %s", host);
+	compute_message(message, line);
+
+	// Add authorization token
+	if (authorization_token != "") {
+		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
+		compute_message(message, line);	
+	}
+
+	// Add cookies
+	if (cookies.size()) {
+		sprintf(line, "Cookie: %s", cookies[0].c_str());
+		for (size_t i = 1; i < cookies.size(); i++) {
+			strcat(line, "; ");
+			strcat(line, cookies[i].c_str());
+		}
+
+		compute_message(message, line);
+
+	}
+
+	// Add final new line
+	compute_message(message, "");
 	return message;
 }
 

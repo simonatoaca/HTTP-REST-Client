@@ -8,13 +8,14 @@
 #define REGISTER "/api/v1/tema/auth/register"
 #define LIBRARY "/api/v1/tema/library/access"
 #define ALL_BOOKS "/api/v1/tema/library/books"
+#define BOOKS_ROOT "/api/v1/tema/library/books/"
+#define LOGOUT "/api/v1/tema/auth/logout"
+
 
 typedef struct {
     std::vector<std::string> cookies;
     std::string auth_token;
 } user_t;
-
-
 
 void register_user(auth::info_t info, int sockfd);
 void login_user(auth::info_t info, int sockfd);
