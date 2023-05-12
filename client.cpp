@@ -12,8 +12,8 @@
 #include <arpa/inet.h>
 #include <time.h>
 
-#include "command_parsing.h"
-#include "requests.h"
+#include "parsers/command_parsing.h"
+#include "utils/requests.h"
 
 static int sockfd;
 

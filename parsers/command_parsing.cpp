@@ -13,8 +13,7 @@
 #include <arpa/inet.h>
 
 #include "command_parsing.h"
-#include "client.h"
-#include "commands.h"
+#include "../utils/commands.h"
 
 #define CMD_RANGE "^(register|login|(add|delete)?_book|get_book[s]{0,1}|enter_library|logout|exit)$"
 
