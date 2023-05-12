@@ -6,6 +6,13 @@
 #define HOST "34.254.242.81:8080"
 #define LOGIN "/api/v1/tema/auth/login"
 #define REGISTER "/api/v1/tema/auth/register"
+#define LIBRARY "/api/v1/tema/library/access"
+#define ALL_BOOKS "/api/v1/tema/library/books"
+
+typedef struct {
+    std::vector<std::string> cookies;
+    std::string auth_token;
+} user_t;
 
 
 

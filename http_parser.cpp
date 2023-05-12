@@ -3,12 +3,16 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <optional>
 #include <regex>
 #include <nlohmann/json.hpp>
 
-// static std::regex cookie_regex("^.*(Set-Cookie: ).*$");
 static std::regex cookie_regex("(Set-Cookie: ).*");
 static std::regex cookie_replace("(Set-Cookie: )");
+static std::regex error_regex("\"(error)\":\"((\\\"|[^\"])*)\"");
+static std::regex token_regex("\"(token)\":\"((\\\"|[^\"])*)\"");
+static std::regex parse_json_field("\"[^\"]*\"");
+
 
 
 std::string get_cookie(std::string response) {
@@ -19,5 +23,22 @@ std::string get_cookie(std::string response) {
 	/* Return what is after : in set-cookie */
 	std::string cookie = std::regex_replace(match[0].str(), cookie_replace, "$2");
 	return cookie;
+}
+
+std::optional<std::string> get_error(std::string response) {
+	std::smatch match;
+	if (std::regex_search(response, match, error_regex)) {
+		std::string error = std::regex_replace(match[2].str(), parse_json_field, "$2");
+		return error;
+	}
+
+	return {};
+}
+
+std::string get_token(std::string response) {
+	std::smatch match;
+	std::regex_search(response, match, token_regex);
+	std::string token = std::regex_replace(match[2].str(), parse_json_field, "$2");
+	return token;
 }
 

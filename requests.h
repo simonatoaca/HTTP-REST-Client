@@ -12,6 +12,7 @@
 #include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
 #include <netdb.h>      /* struct hostent, gethostbyname */
 #include <arpa/inet.h>
+#include <vector>
 
 
 #define HEADER_TERMINATOR "\r\n\r\n"
@@ -29,7 +30,7 @@ typedef struct {
 
 void send_to_server(int sockfd, char *message);
 char *receive_from_server(int sockfd);
-char *compute_get_request(const char *host, const char *url, const char **cookies,
-						int cookies_count, const char *authorization_token);
+char *compute_get_request(const char *host, const char *url, std::vector<std::string> &cookies,
+						 std::string authorization_token);
 char *compute_post_request(const char *host, const char *url, const char* content_type, const char *body_data,
-                            const char **cookies, int cookies_count);
+							std::vector<std::string> &cookies, std::string authorization_token);

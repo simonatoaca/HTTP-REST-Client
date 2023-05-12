@@ -1,5 +1,8 @@
 #include "requests.h"
 
+#include <vector>
+#include <string>
+
 buffer buffer_init(void)
 {
 	buffer buffer;
@@ -121,8 +124,8 @@ void close_connection(int sockfd)
 	close(sockfd);
 }
 
-char *compute_get_request(const char *host, const char *url, const char **cookies,
-						int cookies_count, const char *authorization_token)
+char *compute_get_request(const char *host, const char *url, std::vector<std::string> &cookies,
+						 std::string authorization_token)
 {
 	char *message = (char *)calloc(BUFLEN, sizeof(char));
 	char *line = (char *)calloc(LINELEN, sizeof(char));
@@ -136,24 +139,31 @@ char *compute_get_request(const char *host, const char *url, const char **cookie
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
-	// Add headers and/or cookies, according to the protocol format
-	if (cookies != NULL) {
-		sprintf(line, "Cookie: %s", cookies[0]);
-		for (int i = 1; i < cookies_count; i++) {
+	// Add authorization token
+	if (authorization_token != "") {
+		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
+		compute_message(message, line);	
+	}
+
+	// Add cookies
+	if (cookies.size()) {
+		sprintf(line, "Cookie: %s", cookies[0].c_str());
+		for (size_t i = 1; i < cookies.size(); i++) {
 			strcat(line, "; ");
-			strcat(line, cookies[i]);
+			strcat(line, cookies[i].c_str());
 		}
 
 		compute_message(message, line);
 
 	}
-	// Step 4: add final new line
+
+	// Add final new line
 	compute_message(message, "");
 	return message;
 }
 
 char *compute_post_request(const char *host, const char *url, const char* content_type, const char *body_data,
-							const char **cookies, int cookies_count)
+							std::vector<std::string> &cookies, std::string authorization_token)
 {
 	char *message = (char *)calloc(BUFLEN, sizeof(char));
 	char *line = (char *)calloc(LINELEN, sizeof(char));
@@ -167,9 +177,12 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
-	/* Step 3: add necessary headers (Content-Type and Content-Length are mandatory)
-			in order to write Content-Length you must first compute the message size
-	*/
+	// Add authorization token
+	if (authorization_token != "") {
+		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
+		compute_message(message, line);	
+	}
+
 	strcat(body_data_buffer, body_data);
 
 	sprintf(line, "Content-Type: %s", content_type);
@@ -178,15 +191,22 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	sprintf(line, "Content-Length: %lu", strlen(body_data_buffer));
 	compute_message(message, line);
 
-	// Step 4 (optional): add cookies
-	if (cookies != NULL) {
-	   
+	// Add cookies
+	if (cookies.size()) {
+		sprintf(line, "Cookie: %s", cookies[0].c_str());
+		for (size_t i = 1; i < cookies.size(); i++) {
+			strcat(line, "; ");
+			strcat(line, cookies[i].c_str());
+		}
+
+		compute_message(message, line);
+
 	}
 
-	// Step 5: add new line at end of header
+	// Add new line at end of header
 	compute_message(message, "");
 
-	// Step 6: add the actual payload data
+	// Add the actual payload data
 	memset(line, 0, LINELEN);
 	strcat(message, body_data_buffer);
 

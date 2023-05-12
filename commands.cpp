@@ -7,6 +7,7 @@
 #include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
 #include <netdb.h>      /* struct hostent, gethostbyname */
 #include <arpa/inet.h>
+#include <optional>
 
 #include "commands.h"
 #include "requests.h"
@@ -16,49 +17,82 @@
 
 using json = nlohmann::json;
 
+static user_t user;
+
 void register_user(auth::info_t info, int sockfd) {
 	json body = info;
-
-	std::cout << "\n";
-    char *message = compute_post_request(HOST, REGISTER, JSON_BODY, body.dump().c_str(), NULL, 0);
-    puts(message);
-	std::cout << "\n";
+    char *message = compute_post_request(HOST, REGISTER, JSON_BODY, body.dump().c_str(),
+										user.cookies, user.auth_token);
 
     send_to_server(sockfd, message);
     char *response = receive_from_server(sockfd);
 
 	/* Handle errors, if they occur */
+	std::optional<std::string> error = get_error(response);
+	if (error.has_value()) {
+		std::cout << error.value() << "\n";
+		return;
+	}
 
-    puts(response);
-	std::cout << "\n";
+    std::cout << "Successfully registered username " << info.username << "!\n";
 }
 
 void login_user(auth::info_t info, int sockfd) {
 	json body = info;
 
-	std::cout << "\n";
-    char *message = compute_post_request(HOST, LOGIN, JSON_BODY, body.dump().c_str(), NULL, 0);
-    puts(message);
-	std::cout << "\n";
+    char *message = compute_post_request(HOST, LOGIN, JSON_BODY, body.dump().c_str(),
+										user.cookies, user.auth_token);
 
     send_to_server(sockfd, message);
     char *response = receive_from_server(sockfd);
 
 	/* Handle errors, if they occur */
+	std::optional<std::string> error = get_error(response);
+	if (error.has_value()) {
+		std::cout << error.value() << "\n";
+		return;
+	}
 
 	/* Get cookie */
-	std::string cookie = get_cookie(response);
-	std::cout << cookie << "\n";
+	user.cookies.push_back(get_cookie(response));
 
-    //puts(response);
-	std::cout << "\n";
+    std::cout << "Successfully logged in!\n";
 }
 
 void enter_library(int sockfd) {
-	std::cout << "Trying to enter the library" << "\n";
+	char *message = compute_get_request(HOST, LIBRARY, user.cookies, user.auth_token);
+
+    send_to_server(sockfd, message);
+    char *response = receive_from_server(sockfd);
+
+	/* Handle errors, if they occur */
+	std::optional<std::string> error = get_error(response);
+	if (error.has_value()) {
+		std::cout << error.value() << "\n";
+		return;
+	}
+
+	/* Get token */
+	user.auth_token = get_token(response);
+
+	std::cout << "Access granted into the library.\n";
 }
 
 void get_books(int sockfd) {
+	char *message = compute_get_request(HOST, ALL_BOOKS, user.cookies, user.auth_token);
+
+    send_to_server(sockfd, message);
+    char *response = receive_from_server(sockfd);
+
+	/* Handle errors, if they occur */
+	std::optional<std::string> error = get_error(response);
+	if (error.has_value()) {
+		std::cout << error.value() << "\n";
+		return;
+	}
+
+	puts(response);
+	std::cout << "\n";
 }
 
 void get_book(int id, int sockfd) {
