@@ -2,7 +2,6 @@
 
 #include <string>
 #include <functional>
-#include <variant>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;

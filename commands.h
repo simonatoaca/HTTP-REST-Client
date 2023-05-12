@@ -2,6 +2,13 @@
 
 #include "command_parsing.h"
 
+#define JSON_BODY "application/json"
+#define HOST "34.254.242.81:8080"
+#define LOGIN "/api/v1/tema/auth/login"
+#define REGISTER "/api/v1/tema/auth/register"
+
+
+
 void register_user(auth::info_t info, int sockfd);
 void login_user(auth::info_t info, int sockfd);
 void enter_library(int sockfd);
