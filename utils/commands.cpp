@@ -91,7 +91,12 @@ void get_books(int sockfd) {
 		return;
 	}
 
-	std::cout  << get_json_body(response) << "\n";
+	std::optional<std::string> json_body = get_json_body(response);
+
+	if (json_body.has_value()) {
+		json books = json::parse(json_body.value());
+		std::cout  << books.dump(4) << "\n";
+	}
 }
 
 void get_book(int id, int sockfd) {
@@ -111,7 +116,15 @@ void get_book(int id, int sockfd) {
 		return;
 	}
 
-	std::cout  << get_json_body(response) << "\n";
+	std::optional<std::string> json_body = get_json_body(response);
+
+	if (json_body.has_value()) {
+		/* Get JSON object from string */
+		json book = json::parse(json_body.value());
+
+		/* Pretty print it */
+		std::cout  << book.dump(4) << "\n";
+	}
 }
 
 void add_book(book::info_t book, int sockfd) {

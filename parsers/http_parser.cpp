@@ -42,9 +42,12 @@ std::string get_token(std::string response) {
 	return token;
 }
 
-std::string get_json_body(std::string response) {
+std::optional<std::string> get_json_body(std::string response) {
 	std::smatch match;
-	std::regex_search(response, match, json_body);
-	return match[0].str();
+	if (std::regex_search(response, match, json_body)) {
+		return match[0].str();
+	}
+
+	return {};
 }
 

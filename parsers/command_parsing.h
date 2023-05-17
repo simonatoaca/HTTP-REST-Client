@@ -18,6 +18,7 @@ namespace auth {
 
 namespace book {
     typedef struct {
+        int id;
         std::string title;
         std::string author;
         std::string genre;

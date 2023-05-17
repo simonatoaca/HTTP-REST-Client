@@ -46,7 +46,6 @@ char *compute_get_request(const char *host, const char *url, std::vector<std::st
 		}
 
 		compute_message(message, line);
-
 	}
 
 	// Add final new line
@@ -61,11 +60,11 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	char *line = (char *)calloc(LINELEN, sizeof(char));
 	char *body_data_buffer = (char *)calloc(LINELEN, sizeof(char));
 
-	// Step 1: write the method name, URL and protocol type
+	// Write the method name, URL and protocol type
 	sprintf(line, "POST %s HTTP/1.1", url);
 	compute_message(message, line);
 	
-	// Step 2: add the host
+	// Add the host
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
@@ -92,7 +91,6 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 		}
 
 		compute_message(message, line);
-
 	}
 
 	// Add new line at end of header
@@ -136,15 +134,12 @@ char *compute_delete_request(const char *host, const char *url, std::vector<std:
 		}
 
 		compute_message(message, line);
-
 	}
 
 	// Add final new line
 	compute_message(message, "");
 	return message;
 }
-
-
 
 void send_to_server(int sockfd, char *message)
 {

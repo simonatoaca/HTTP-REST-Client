@@ -11,9 +11,14 @@
 #include <netdb.h>      /* struct hostent, gethostbyname */
 #include <arpa/inet.h>
 #include <time.h>
+#include <sys/epoll.h>
 
 #include "parsers/command_parsing.h"
 #include "utils/requests.h"
+#include "client.h"
+
+#define MAX_CONNECTIONS 2
+#define EPOLL_TIMEOUT 1000
 
 static int sockfd;
 
@@ -37,13 +42,86 @@ int init_connection() {
 	return sockfd;
 }
 
-int main() {
-	std::string command;
-	while (1) {
-		std::getline(std::cin, command);
+int add_to_epoll(int epollfd, int fd, int flag) {
+	struct epoll_event ev;
 
-		sockfd = init_connection();
-		parse_command(command)(sockfd);
-		close(sockfd);
+	ev.events = flag;
+	ev.data.fd = fd;
+
+	return epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+}
+
+int remove_from_epoll(int epollfd, int fd, int flag) {
+	struct epoll_event ev;
+
+	ev.events = flag;
+	ev.data.fd = fd;
+
+	return epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+}
+
+int main() {
+	int rc;
+
+	int epollfd = epoll_create(MAX_CONNECTIONS);
+
+	/* Add descriptor to epoll */
+	add_to_epoll(epollfd, STDIN_FILENO, EPOLLIN);
+
+	std::string command;
+	bool can_send = false;
+	std::optional<std::function<void (int)>> cmd = {};
+
+	while (1) {
+		struct epoll_event rev;
+
+		rc = epoll_wait(epollfd, &rev, 1, EPOLL_TIMEOUT);
+		DIE(rc < 0, "epoll_wait");
+
+		/* Connection timed out / was closed */
+		if (rev.data.fd == sockfd && (rev.events & EPOLLRDHUP)) {
+			/* If there was a command waiting, reopen the connection */
+			if (cmd.has_value()) {
+				close(sockfd);
+				sockfd = init_connection();
+
+				cmd.value()(sockfd);
+				cmd = {};
+				continue;
+			}
+
+			/* Close connection and set flag */
+			close(sockfd);
+			remove_from_epoll(epollfd, sockfd, EPOLLRDHUP | EPOLLOUT);
+			can_send = false;
+
+			continue;
+		}
+
+		/* Received input from the user */
+		if (rev.data.fd == STDIN_FILENO && (rev.events & EPOLLIN)) {
+			std::getline(std::cin, command);
+			cmd = parse_command(command);
+
+			/* Reopen connection if needed */
+			if (!can_send) {
+				sockfd = init_connection();
+				add_to_epoll(epollfd, sockfd, EPOLLRDHUP | EPOLLOUT);
+				can_send = true;
+			}
+
+			/* Wait for epollout / epollrdhup from the server */
+			rc = epoll_wait(epollfd, &rev, 1, EPOLL_TIMEOUT);
+			DIE(rc < 0, "epoll_wait");
+
+			if (rev.data.fd == sockfd && (rev.events & EPOLLRDHUP)) {
+				close(sockfd);
+				sockfd = init_connection();
+			}
+
+			cmd.value()(sockfd);
+			cmd = {};
+			continue;
+		}
 	}
 }

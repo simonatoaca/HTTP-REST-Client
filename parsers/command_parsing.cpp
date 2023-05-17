@@ -36,6 +36,7 @@ void book::to_json(json& j, const info_t& info) {
 }
 
 void book::from_json(const json& j, info_t& info) {
+	j.at("id").get_to(info.id);
 	j.at("title").get_to(info.title);
 	j.at("author").get_to(info.author);
 	j.at("genre").get_to(info.genre);
@@ -100,7 +101,7 @@ std::optional<book::info_t> get_book_info() {
 		return {};
 	}
 
-	return (book::info_t){title, author, genre, publisher, stoi(page_count)};
+	return (book::info_t){{}, title, author, genre, publisher, stoi(page_count)};
 }
 
 std::function<void(int)> parse_command(std::string& command) {
