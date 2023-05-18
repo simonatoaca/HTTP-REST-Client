@@ -12,7 +12,7 @@
 #include <netdb.h>      /* struct hostent, gethostbyname */
 #include <arpa/inet.h>
 
-#include "command_parsing.h"
+#include "command_parser.h"
 #include "../utils/commands.h"
 
 #define CMD_RANGE "^(register|login|(add|delete)?_book|get_book[s]{0,1}|enter_library|logout|exit)$"
@@ -31,7 +31,7 @@ void auth::from_json(const json& j, info_t& info) {
 }
 
 void book::to_json(json& j, const info_t& info) {
-	j = json{{"title", info.title}, {"author", info.author}, {"genre", info.genre},
+	j = json{{"id", info.id}, {"title", info.title}, {"author", info.author}, {"genre", info.genre},
 				{"publisher", info.publisher}, {"page_count", info.page_count}};
 }
 

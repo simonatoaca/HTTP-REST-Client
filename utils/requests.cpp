@@ -22,22 +22,22 @@ char *compute_get_request(const char *host, const char *url, std::vector<std::st
 	char *message = (char *)calloc(BUFLEN, sizeof(char));
 	char *line = (char *)calloc(LINELEN, sizeof(char));
 
-	// Write the method name, URL and protocol type
+	/* Write the method name, URL and protocol type */
 	sprintf(line, "GET %s HTTP/1.1", url);
 
 	compute_message(message, line);
 
-	// Add the host
+	/* Add the host */
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
-	// Add authorization token
+	/* Add authorization token */
 	if (authorization_token != "") {
 		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
 		compute_message(message, line);	
 	}
 
-	// Add cookies
+	/* Add cookies */
 	if (cookies.size()) {
 		sprintf(line, "Cookie: %s", cookies[0].c_str());
 		for (size_t i = 1; i < cookies.size(); i++) {
@@ -48,7 +48,7 @@ char *compute_get_request(const char *host, const char *url, std::vector<std::st
 		compute_message(message, line);
 	}
 
-	// Add final new line
+	/* Add final new line */
 	compute_message(message, "");
 	return message;
 }
@@ -60,15 +60,15 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	char *line = (char *)calloc(LINELEN, sizeof(char));
 	char *body_data_buffer = (char *)calloc(LINELEN, sizeof(char));
 
-	// Write the method name, URL and protocol type
+	/* Write the method name, URL and protocol type */
 	sprintf(line, "POST %s HTTP/1.1", url);
 	compute_message(message, line);
 	
-	// Add the host
+	/* Add the host */
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
-	// Add authorization token
+	/* Add authorization token */
 	if (authorization_token != "") {
 		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
 		compute_message(message, line);	
@@ -82,7 +82,7 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 	sprintf(line, "Content-Length: %lu", strlen(body_data_buffer));
 	compute_message(message, line);
 
-	// Add cookies
+	/* Add cookies */
 	if (cookies.size()) {
 		sprintf(line, "Cookie: %s", cookies[0].c_str());
 		for (size_t i = 1; i < cookies.size(); i++) {
@@ -93,10 +93,10 @@ char *compute_post_request(const char *host, const char *url, const char* conten
 		compute_message(message, line);
 	}
 
-	// Add new line at end of header
+	/* Add new line at end of header */
 	compute_message(message, "");
 
-	// Add the actual payload data
+	/* Add the actual payload data */
 	memset(line, 0, LINELEN);
 	strcat(message, body_data_buffer);
 
@@ -110,22 +110,22 @@ char *compute_delete_request(const char *host, const char *url, std::vector<std:
 	char *message = (char *)calloc(BUFLEN, sizeof(char));
 	char *line = (char *)calloc(LINELEN, sizeof(char));
 
-	// Write the method name, URL and protocol type
+	/* Write the method name, URL and protocol type */
 	sprintf(line, "DELETE %s HTTP/1.1", url);
 
 	compute_message(message, line);
 
-	// Add the host
+	/* Add the host */
 	sprintf(line, "Host: %s", host);
 	compute_message(message, line);
 
-	// Add authorization token
+	/* Add authorization token */
 	if (authorization_token != "") {
 		sprintf(line, "Authorization: Bearer %s", authorization_token.c_str());
 		compute_message(message, line);	
 	}
 
-	// Add cookies
+	/* Add cookies */
 	if (cookies.size()) {
 		sprintf(line, "Cookie: %s", cookies[0].c_str());
 		for (size_t i = 1; i < cookies.size(); i++) {
@@ -136,7 +136,7 @@ char *compute_delete_request(const char *host, const char *url, std::vector<std:
 		compute_message(message, line);
 	}
 
-	// Add final new line
+	/* Add final new line */
 	compute_message(message, "");
 	return message;
 }

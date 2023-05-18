@@ -40,6 +40,9 @@ void register_user(auth::info_t info, int sockfd) {
 void login_user(auth::info_t info, int sockfd) {
 	json body = info;
 
+	user.cookies.clear();
+	user.auth_token.clear();
+
     char *message = compute_post_request(HOST, LOGIN, JSON_BODY, body.dump().c_str(),
 										user.cookies, user.auth_token);
 

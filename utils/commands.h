@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../parsers/command_parsing.h"
+#include "../parsers/command_parser.h"
 
 #define JSON_BODY "application/json"
 #define HOST "34.254.242.81:8080"

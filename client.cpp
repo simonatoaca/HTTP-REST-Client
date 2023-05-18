@@ -13,52 +13,12 @@
 #include <time.h>
 #include <sys/epoll.h>
 
-#include "parsers/command_parsing.h"
+#include "utils/connection_utils.h"
+#include "parsers/command_parser.h"
 #include "utils/requests.h"
 #include "client.h"
 
-#define MAX_CONNECTIONS 2
-#define EPOLL_TIMEOUT 1000
-
 static int sockfd;
-
-int init_connection() {
-	struct sockaddr_in serv_addr;
-    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-		perror("socket init failed");
-	}
-
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(8080);
-    inet_aton("34.254.242.81", &serv_addr.sin_addr);
-
-    /* connect the socket */
-    if (connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0) {
-        perror("ERROR connecting");
-	}
-	
-	return sockfd;
-}
-
-int add_to_epoll(int epollfd, int fd, int flag) {
-	struct epoll_event ev;
-
-	ev.events = flag;
-	ev.data.fd = fd;
-
-	return epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
-}
-
-int remove_from_epoll(int epollfd, int fd, int flag) {
-	struct epoll_event ev;
-
-	ev.events = flag;
-	ev.data.fd = fd;
-
-	return epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
-}
 
 int main() {
 	int rc;
