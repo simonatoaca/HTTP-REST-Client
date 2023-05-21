@@ -13,7 +13,7 @@
 #include "requests.h"
 #include "../parsers/http_parser.h"
 
-#include <nlohmann/json.hpp>
+#include "../json.hpp"
 
 using json = nlohmann::json;
 
@@ -99,6 +99,8 @@ void get_books(int sockfd) {
 	if (json_body.has_value()) {
 		json books = json::parse(json_body.value());
 		std::cout  << books.dump(4) << "\n";
+	} else {
+		std::cout << "No books found.\n";
 	}
 }
 

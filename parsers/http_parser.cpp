@@ -5,7 +5,7 @@
 #include <string>
 #include <optional>
 #include <regex>
-#include <nlohmann/json.hpp>
+#include "../json.hpp"
 
 static std::regex cookie_regex("(Set-Cookie: ).*");
 static std::regex cookie_replace("(Set-Cookie: )");

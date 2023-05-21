@@ -23,11 +23,6 @@
 #define BUFLEN 4096
 #define LINELEN 1000
 
-typedef struct {
-    char *data;
-    size_t size;
-} buffer;
-
 void send_to_server(int sockfd, char *message);
 char *receive_from_server(int sockfd);
 char *compute_get_request(const char *host, const char *url, std::vector<std::string> &cookies,
